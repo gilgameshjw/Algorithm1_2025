@@ -35,7 +35,7 @@ def list_to_int(d_list):
     """Converts a list of digits (LSD first) back to an integer for display."""
     return int("".join(map(str, d_list[::-1])))
 
-# --- Примеры использования ---
+
 num1 = 1234
 num2 = 567
 
