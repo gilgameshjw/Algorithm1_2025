@@ -73,7 +73,7 @@ print("-" * 70)
 
 # ⭐️ FULL ARRAY OUTPUT
 print("Generated Vector V (Index: Value):")
-# Выводим индексы для удобства
+
 print("Index:  ", "  ".join(f"{i % 10:2}" for i in range(VECTOR_SIZE)))
 print("Value:  ", "  ".join(f"{v:2}" for v in v_example_random))
 print("-" * 70)
