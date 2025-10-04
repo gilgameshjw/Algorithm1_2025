@@ -1,0 +1,139 @@
+Problem 1 (Sparse Vector with Divide & Conquer)
+(a) Pseudocode for divide & conquer (recursive, no copy)
+
+Case 1: m = 2 (binary split)
+
+function divide(v, left, right):
+    if left == right:        # vector fully decomposed
+        return left if v[left] == 1 else None
+    
+    mid = (left + right) // 2
+    
+    result = divide(v, left, mid)
+    if result != None:
+        return result
+    else:
+        return divide(v, mid+1, right)
+
+
+Case 2: General m-way division
+
+function divide(v, left, right, m):
+    if left == right:
+        return left if v[left] == 1 else None
+    
+    size = (right - left + 1) / m
+    for i in 0 .. m-1:
+        start = left + i * size
+        end   = min(right, start + size - 1)
+        
+        result = divide(v, start, end, m)
+        if result != None:
+            return result
+    
+    return None
+
+
+
+(b) Complexity of divide-and-conquer
+
+Binary division (m = 2):
+
+Recurrence:
+		T(n)=T(n/2)+O(1)
+
+		T(n)=O(logn)
+
+Ternary division (m = 3):
+
+Recurrence:
+
+		T(n)=T(n/3)+O(1)
+
+		T(n)=O(log3​n)=O(logn)
+
+General m-way division:
+Always:
+
+		T(n) = T(n/m)+O(1)     ⇒     T(n) = O(logn)
+
+
+(c) Collecting the 1 and its position
+
+Once size = 1, we check directly if element is 1.
+
+Cost per check: O(1).
+
+Total recurrence:
+
+		T(n)=T(n/m)+O(1)
+
+Using Master Theorem → O(log n).
+
+If we check all leaves naively: O(n).
+But in divide & conquer, we stop when 1 is found → O(log n).
+
+
+(d) Comparison with simple approach
+
+Naive scan all indices:
+Time complexity: O(n)
+
+Divide and conquer:
+Time complexity: O(log n)
+→ Much 
+
+
+Problem 2 (School Multiplication)
+(1) Pseudocode for school multiplication
+function multiply(X, Y):
+    n = length(X)
+    m = length(Y)
+    result = array of zeros with size n+m
+    
+    for i in 0..n-1:
+        carry = 0
+        for j in 0..m-1:
+            product = X[i] * Y[j] + result[i+j] + carry
+            result[i+j] = product % 10
+            carry = product // 10
+        if carry > 0:
+            result[i+m] += carry
+    
+    return result
+
+(2) Handling very large numbers
+
+Store result in an array of digits, not as an integer.
+
+This avoids overflow because each step works with small digits.
+
+
+(3) Time complexity
+
+We do n * m digit multiplications.
+
+If both numbers have n digits:
+		T(n)=O(n^2)
+
+
+(4) Divide and Conquer / Karatsuba
+
+Divide each number into halves:
+
+		x=x1​⋅10^(n/2) + x0,  y=y1​⋅10^(n/2) + y0
+
+		T(n)=4T(n/2)+O(n)⇒O(n^2)
+
+		T(n)=3T(n/2)+O(n)⇒O(n^1.585)
+
+(5) Factorial with multiplication
+
+Notice:
+		n!=1×2×3×⋯×n
+
+Using vector multiplication (mult), we can compute:
+
+		n!=mult([1,2,...,n],[1])
+
+Or equivalently: multiply successively with our algorithm.
