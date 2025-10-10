@@ -1,3 +1,7 @@
+import math
+import time
+from typing import List, Tuple
+
 # PROBLEM 1: Sparse Vector with Single 1
 
 def binary_search_sparse(v: List[int], start: int, end: int) -> int:
