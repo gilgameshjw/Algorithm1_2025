@@ -1,0 +1,7 @@
+# For C:
+# Just type in Terminal:
+make run
+
+# For Python:
+pip3 install matplotlib
+python3 ex2.py
