@@ -1,0 +1,55 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+string trimZeros(const string &s){
+    size_t p=s.find_first_not_of('0');
+    return(p==string::npos)?"0":s.substr(p);
+}
+
+bool isNumber(const string &s){
+    return !s.empty() && all_of(s.begin(),s.end(),::isdigit);
+}
+
+string multiplyBig(const string &Ain,const string &Bin){
+    string A=trimZeros(Ain),B=trimZeros(Bin);
+    if(A=="0"||B=="0")return"0";
+    vector<int>a(A.size()),b(B.size());
+    for(size_t i=0;i<A.size();++i)a[i]=A[A.size()-1-i]-'0';
+    for(size_t i=0;i<B.size();++i)b[i]=B[B.size()-1-i]-'0';
+    vector<long long>res(a.size()+b.size());
+    for(size_t i=0;i<a.size();++i)
+        for(size_t j=0;j<b.size();++j)
+            res[i+j]+=1LL*a[i]*b[j];
+    long long carry=0;
+    for(size_t k=0;k<res.size();++k){
+        long long cur=res[k]+carry;
+        res[k]=cur%10;
+        carry=cur/10;
+    }
+    while(carry>0){
+        res.push_back(carry%10);
+        carry/=10;
+    }
+    while(res.size()>1&&res.back()==0)res.pop_back();
+    string out;
+    out.reserve(res.size());
+    for(int i=res.size()-1;i>=0;--i)
+        out.push_back(char('0'+res[i]));
+    return out;
+}
+
+int main(){
+    
+    cout<<"two non-negative integers:\n";
+    string A,B;
+    cin>>A>>B;
+    if(!isNumber(A)||!isNumber(B)){
+        cout<<"Please enter valid integers\n";
+        return 0;
+    }
+    cout<<"Result: "<<multiplyBig(A,B)<<"\n";
+    return 0;
+}
