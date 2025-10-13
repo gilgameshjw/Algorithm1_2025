@@ -1,0 +1,70 @@
+Selection Sort
+
+Best Case Time Complexity: O(n²)
+Average Case Time Complexity: O(n²)
+Worst Case Time Complexity: O(n²)
+Space Complexity: O(1)
+Explanation:
+Selection Sort always scans the remaining unsorted elements to find the smallest one and places it in the correct position.
+The process does not depend on the initial order of elements, so all cases have O(n²) complexity.
+It performs sorting in place, requiring no additional memory.
+
+
+
+Quick Sort (Random Pivot)
+
+Best Case Time Complexity: O(n log n)
+Average Case Time Complexity: O(n log n)
+Worst Case Time Complexity: O(n²)
+Space Complexity: O(log n)
+Explanation:
+When the pivot divides the array evenly, the recursion depth is log n, and each level requires O(n) operations,
+so the total complexity is O(n log n).
+However, if unlucky pivot choices lead to very unbalanced partitions (for example, always smallest or largest element),
+the recursion depth becomes n, resulting in O(n²) time.
+Uses additional space from recursion stack.
+
+
+
+Quick Sort (Median-of-Three Pivot)
+
+Best Case Time Complexity: O(n log n)
+Average Case Time Complexity: O(n log n)
+Worst Case Time Complexity: O(n log n)
+Space Complexity: O(log n)
+Explanation:
+By choosing the pivot as the median of the first, middle, and last elements,
+this version minimizes the chance of unbalanced splits.
+Therefore, all cases generally achieve O(n log n) time complexity.
+It performs sorting recursively and uses logarithmic stack space.
+
+
+
+Merge Sort
+
+Best Case Time Complexity: O(n log n)
+Average Case Time Complexity: O(n log n)
+Worst Case Time Complexity: O(n log n)
+Space Complexity: O(n)
+Explanation:
+Merge Sort divides the array into halves recursively and merges them.
+Its recurrence relation is T(n) = 2T(n/2) + O(n),
+and by applying the Master Theorem, we obtain O(n log n).
+It guarantees stable sorting but requires extra space for merging subarrays.
+
+
+
+Heap Sort
+
+Best Case Time Complexity: O(n log n)
+Average Case Time Complexity: O(n log n)
+Worst Case Time Complexity: O(n log n)
+Space Complexity: O(1)
+Explanation:
+Heap Sort first builds a max heap (O(n)) and then repeatedly extracts the maximum element,
+each extraction taking O(log n).
+Therefore, the total complexity is O(n log n).
+It works in place and does not need extra space apart from a few variables.
+
+
+Among these Merge Sort and Heap Sort guarantee O(n log n) in the worst case, while Quick Sort is typically fastest in practice but can degrade to O(n²).
