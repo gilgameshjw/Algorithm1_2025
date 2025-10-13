@@ -21,3 +21,19 @@ Bad Sorting (Selection): 0.40915 sec
 Quick Sort (Median of 3): 0.00597 sec
 Merge Sort: 0.00749 sec
 Heap Sort: 0.01057 sec
+
+
+To evaluate the real performance of implemented algorithms,
+experiments were conducted on randomly generated integer arrays of different sizes (500, 1000, 2000, and 5000 elements).
+The algorithms compared were:
+Selection Sort (O(n²)), Quick Sort with median-of-3 pivot, Merge Sort, and Heap Sort.
+
+Results:
+Selection Sort performed significantly slower as the data size increased, confirming its quadratic complexity.
+Quick Sort (median) showed the best average performance, slightly faster than Merge and Heap Sort.
+Both Merge and Heap Sort maintained stable O(n log n) performance even for larger arrays.
+
+Conclusion:
+For small datasets, all O(n log n) algorithms performed similarly.
+For large datasets, Quick Sort (median) was the fastest on average.
+Selection Sort is clearly inefficient for large arrays due to its O(n²) time complexity.
