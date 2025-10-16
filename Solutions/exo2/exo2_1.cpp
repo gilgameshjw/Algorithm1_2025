@@ -1,17 +1,40 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 200'007;
-const int MOD = 1'000'000'007;
+const int MIN = 2147483647;
+const int MAX = -2147483648;
+int k = 0;
+void badSort(vector<int> &v) {
+    int n = (int)v.size();
+    for (int i = 0; i < n / 2; ++i) {
+        int start = i, end = n - 1 - i;
 
-void badSort(vector<int> &v){
-	for(int i = 0; i < v.size(); i++){
-		for(int j = 0; j < v.size(); j++){
-			if(v[i] < v[j]){
-				swap(v[i], v[j]);
+        int mn = v[start], mn_pos = start;
+        int mx = v[start], mx_pos = start;
+
+
+        for (int j = start; j <= end; ++j) {
+            ++k; 
+			if (v[j] < mn) { 
+				mn = v[j]; mn_pos = j; 
+				}
+            ++k; 
+			if (v[j] > mx) { 
+				mx = v[j]; mx_pos = j; 
+				}
+        }
+
+        if (mn_pos != start){
+			swap(v[start], v[mn_pos]);
 			}
+        if (mx_pos == start){
+        	mx_pos = mn_pos;
+		} 
+
+        if (mx_pos != end) {
+			swap(v[mx_pos], v[end]);
 		}
-	}
+    }
 }
 
 void solve() {
@@ -25,6 +48,7 @@ void solve() {
 	for(int i : v){
 		cout << i << ' ';
 	}
+	cout << "\n" << k;
 }
 int main(){
 	int t = 1;
