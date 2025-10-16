@@ -1,101 +1,173 @@
-import random
+# c sharp
 
-def generate_test_data(sizes=[5, 10, 20]):
-    tests = []
-    for size in sizes:
-        arr = [random.randint(0, 100) for _ in range(size)]
-        tests.append(arr)
-    return tests
+using System;
+using System.Collections.Generic;
 
-def check_sorting_algorithm(sort_func):
-    print(f"\nTesting {sort_func.__name__}...")
-    tests = generate_test_data()
-    for arr in tests:
-        arr_copy = arr.copy()
-        sorted_arr = sort_func(arr_copy)
-        if sorted_arr == sorted(arr):
-            print(f"  ✅ Passed for input size {len(arr)}")
-        else:
-            print(f"  ❌ Failed for input size {len(arr)}. Got {sorted_arr}")
+class Program
+{
+    static void Main()
+    {
+        var tests = new int[][] {
+            GenerateTestData(5),
+            GenerateTestData(10),
+            GenerateTestData(20)
+        };
 
-def bad_sort(arr):
-    n = len(arr)
-    for i in range(n):
-        for j in range(0, n - i - 1):
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-    return arr
+        TestAlgorithm("Bad Sort", BadSort, tests);
+        TestAlgorithm("Quick Sort (Random Pivot)", QuickSortRandom, tests);
+        TestAlgorithm("Quick Sort (Average Pivot)", QuickSortAverage, tests);
+        TestAlgorithm("Merge Sort", MergeSort, tests);
+        TestAlgorithm("Heap Sort", HeapSort, tests);
+    }
 
-check_sorting_algorithm(bad_sort)
+    static int[] GenerateTestData(int size)
+    {
+        Random rnd = new Random();
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++)
+            arr[i] = rnd.Next(0, 100);
+        return arr;
+    }
 
-def quick_sort_random(arr):
-    if len(arr) <= 1:
-        return arr
-    pivot = random.choice(arr)
-    left = [x for x in arr if x < pivot]
-    mid = [x for x in arr if x == pivot]
-    right = [x for x in arr if x > pivot]
-    return quick_sort_random(left) + mid + quick_sort_random(right)
+    static void TestAlgorithm(string name, Func<int[], int[]> sortFunc, int[][] tests)
+    {
+        Console.WriteLine($"\nTesting {name}...");
+        foreach (var t in tests)
+        {
+            var copy = (int[])t.Clone();
+            var sorted = sortFunc(copy);
+            var expected = (int[])t.Clone();
+            Array.Sort(expected);
+            if (AreEqual(sorted, expected))
+                Console.WriteLine($"Passed for size {t.Length}");
+            else
+                Console.WriteLine($"Failed for size {t.Length}");
+        }
+    }
 
-check_sorting_algorithm(quick_sort_random)
+    static bool AreEqual(int[] a, int[] b)
+    {
+        if (a.Length != b.Length) return false;
+        for (int i = 0; i < a.Length; i++)
+            if (a[i] != b[i]) return false;
+        return true;
+    }
 
-def quick_sort_average(arr):
-    if len(arr) <= 1:
-        return arr
-    first = arr[0]
-    mid_val = arr[len(arr)//2]
-    last = arr[-1]
-    pivot = sorted([first, mid_val, last])[1]
-    left = [x for x in arr if x < pivot]
-    mid = [x for x in arr if x == pivot]
-    right = [x for x in arr if x > pivot]
-    return quick_sort_average(left) + mid + quick_sort_average(right)
+    static int[] BadSort(int[] arr)
+    {
+        int n = arr.Length;
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (arr[j] > arr[j + 1])
+                {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+        return arr;
+    }
 
-check_sorting_algorithm(quick_sort_average)
+    static int[] QuickSortRandom(int[] arr)
+    {
+        if (arr.Length <= 1) return arr;
+        Random rnd = new Random();
+        int pivot = arr[rnd.Next(arr.Length)];
+        var left = new List<int>();
+        var mid = new List<int>();
+        var right = new List<int>();
+        foreach (var x in arr)
+        {
+            if (x < pivot) left.Add(x);
+            else if (x == pivot) mid.Add(x);
+            else right.Add(x);
+        }
+        var result = new List<int>();
+        result.AddRange(QuickSortRandom(left.ToArray()));
+        result.AddRange(mid);
+        result.AddRange(QuickSortRandom(right.ToArray()));
+        return result.ToArray();
+    }
 
-def merge_sort(arr):
-    if len(arr) <= 1:
-        return arr
-    mid = len(arr) // 2
-    left = merge_sort(arr[:mid])
-    right = merge_sort(arr[mid:])
-    return merge(left, right)
+    static int[] QuickSortAverage(int[] arr)
+    {
+        if (arr.Length <= 1) return arr;
+        int first = arr[0];
+        int midVal = arr[arr.Length / 2];
+        int last = arr[arr.Length - 1];
+        int[] triple = { first, midVal, last };
+        Array.Sort(triple);
+        int pivot = triple[1];
+        var left = new List<int>();
+        var mid = new List<int>();
+        var right = new List<int>();
+        foreach (var x in arr)
+        {
+            if (x < pivot) left.Add(x);
+            else if (x == pivot) mid.Add(x);
+            else right.Add(x);
+        }
+        var result = new List<int>();
+        result.AddRange(QuickSortAverage(left.ToArray()));
+        result.AddRange(mid);
+        result.AddRange(QuickSortAverage(right.ToArray()));
+        return result.ToArray();
+    }
 
-def merge(left, right):
-    result = []
-    i = j = 0
-    while i < len(left) and j < len(right):
-        if left[i] <= right[j]:
-            result.append(left[i])
-            i += 1
-        else:
-            result.append(right[j])
-            j += 1
-    result.extend(left[i:])
-    result.extend(right[j:])
-    return result
+    static int[] MergeSort(int[] arr)
+    {
+        if (arr.Length <= 1) return arr;
+        int mid = arr.Length / 2;
+        int[] left = new int[mid];
+        int[] right = new int[arr.Length - mid];
+        Array.Copy(arr, 0, left, 0, mid);
+        Array.Copy(arr, mid, right, 0, arr.Length - mid);
+        left = MergeSort(left);
+        right = MergeSort(right);
+        return Merge(left, right);
+    }
 
-check_sorting_algorithm(merge_sort)
+    static int[] Merge(int[] left, int[] right)
+    {
+        int[] result = new int[left.Length + right.Length];
+        int i = 0, j = 0, k = 0;
+        while (i < left.Length && j < right.Length)
+        {
+            if (left[i] <= right[j]) result[k++] = left[i++];
+            else result[k++] = right[j++];
+        }
+        while (i < left.Length) result[k++] = left[i++];
+        while (j < right.Length) result[k++] = right[j++];
+        return result;
+    }
 
-def heapify(arr, n, i):
-    largest = i
-    l = 2 * i + 1
-    r = 2 * i + 2
-    if l < n and arr[l] > arr[largest]:
-        largest = l
-    if r < n and arr[r] > arr[largest]:
-        largest = r
-    if largest != i:
-        arr[i], arr[largest] = arr[largest], arr[i]
-        heapify(arr, n, largest)
+    static int[] HeapSort(int[] arr)
+    {
+        int n = arr.Length;
+        for (int i = n / 2 - 1; i >= 0; i--)
+            Heapify(arr, n, i);
+        for (int i = n - 1; i > 0; i--)
+        {
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+            Heapify(arr, i, 0);
+        }
+        return arr;
+    }
 
-def heap_sort(arr):
-    n = len(arr)
-    for i in range(n//2 - 1, -1, -1):
-        heapify(arr, n, i)
-    for i in range(n-1, 0, -1):
-        arr[0], arr[i] = arr[i], arr[0]
-        heapify(arr, i, 0)
-    return arr
-
-check_sorting_algorithm(heap_sort)
+    static void Heapify(int[] arr, int n, int i)
+    {
+        int largest = i;
+        int l = 2 * i + 1;
+        int r = 2 * i + 2;
+        if (l < n && arr[l] > arr[largest]) largest = l;
+        if (r < n && arr[r] > arr[largest]) largest = r;
+        if (largest != i)
+        {
+            int temp = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = temp;
+            Heapify(arr, n, largest);
+        }
+    }
+}
