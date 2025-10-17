@@ -20,11 +20,42 @@ int partition(vector<int> &v, int l, int r){
 	return i;
 }
 	
+int avg_partition(vector<int> &v, int l, int r){
+	int down = l;
+	int up = r;
+	int mid = l + (l + r) / 2;
+	int a = v[down];
+	int b = v[mid];
+	int c = v[up];
+	
+	if(v[down] > v[mid]){
+		swap(v[down], v[mid]);
+	}
+	if(v[down] > v[up]){
+		swap(v[down], v[up]);
+	}
+	if(v[mid] > v[up]){
+		swap(v[mid], v[up]);
+	}
+	
+	swap(v[mid], v[r]);
+	int pivot = v[r];
+	int i = l;
+	for(int j = l; j < r; j++){
+		if(v[j] < pivot){
+			swap(v[j], v[i]);
+			i++;
+		}
+	}
+	swap(v[i], v[r]);
+	return i;
+}	
+	
 void quickSort(vector<int> &v, int l, int r){
 	if (l >= r){
 		return;
 	}
-	int p = partition(v, l, r);
+	int p = avg_partition(v, l, r);
 	quickSort(v, l, p - 1);
 	quickSort(v, p + 1, r);
 }	
