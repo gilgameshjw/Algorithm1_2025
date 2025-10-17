@@ -3,7 +3,6 @@ using namespace std;
 
 const int MIN = 2147483647;
 const int MAX = -2147483648;
-int k = 0;
 
 int partition(vector<int> &v, int l, int r){
 	int pivot_index =l + rand() % (r - l + 1);
@@ -23,10 +22,7 @@ int partition(vector<int> &v, int l, int r){
 int avg_partition(vector<int> &v, int l, int r){
 	int down = l;
 	int up = r;
-	int mid = l + (l + r) / 2;
-	int a = v[down];
-	int b = v[mid];
-	int c = v[up];
+	int mid = l + (r - l) / 2;
 	
 	if(v[down] > v[mid]){
 		swap(v[down], v[mid]);
@@ -70,19 +66,17 @@ void badSort(vector<int> &v) {
 
 
         for (int j = start; j <= end; ++j) {
-            ++k; 
 			if (v[j] < mn) { 
 				mn = v[j]; mn_pos = j; 
-				}
-            ++k; 
+			}
 			if (v[j] > mx) { 
 				mx = v[j]; mx_pos = j; 
-				}
+			}
         }
 
         if (mn_pos != start){
 			swap(v[start], v[mn_pos]);
-			}
+		}
         if (mx_pos == start){
         	mx_pos = mn_pos;
 		} 
@@ -93,18 +87,61 @@ void badSort(vector<int> &v) {
     }
 }
 
+void merge(vector<int> &v, int l, int m, int r, vector<int> &tmp){
+	int i = l;
+	int j = m + 1;
+	int k = l;
+	if(v[m] <= v[m + 1]){
+		return;
+	}
+	while(i <= m && j <= r){
+		if(v[i] <= v[j]){
+			tmp[k] = v[i];
+			i++;
+		}
+		else{
+			tmp[k] = v[j];
+			j++;
+		}
+		k++;
+	}
+	while(i <= m){
+		tmp[k] = v[i];
+		i++;
+		k++;
+	}
+	while(j <= r){
+		tmp[k] = v[j];
+		j++;
+		k++;
+	}
+	for(int t = l; t <= r; t++){
+		v[t] = tmp[t]; 
+	}
+}
+
+void mergeSort(vector<int> &v, int l, int r, vector<int> &tmp){
+	if(l >= r){
+		return;
+	}
+	int m = l + (r - l) / 2;
+	mergeSort(v, l, m, tmp);
+	mergeSort(v, m + 1, r, tmp);
+	merge(v, l, m, r, tmp);
+}
+
 void solve() {
 	int n;
 	cin >> n;
 	vector<int> v(n);
+	vector<int> tmp(n);
 	for(int i = 0; i < n; i++){
 		cin >> v[i];
 	}
-	quickSort(v, 0, v.size() - 1);
+	mergeSort(v, 0, v.size() - 1, tmp);
 	for(int i : v){
 		cout << i << ' ';
 	}
-	cout << "\n" << k;
 }
 int main(){
 	int t = 1;
