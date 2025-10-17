@@ -4,6 +4,31 @@ using namespace std;
 const int MIN = 2147483647;
 const int MAX = -2147483648;
 int k = 0;
+
+int partition(vector<int> &v, int l, int r){
+	int pivot_index =l + rand() % (r - l + 1);
+	swap(v[pivot_index], v[r]);
+	int pivot = v[r];
+	int i = l;
+	for(int j = l; j < r; j++){
+		if(v[j] < pivot){
+			swap(v[i], v[j]);
+			i++;
+		}
+	}
+	swap(v[r], v[i]);
+	return i;
+}
+	
+void quickSort(vector<int> &v, int l, int r){
+	if (l >= r){
+		return;
+	}
+	int p = partition(v, l, r);
+	quickSort(v, l, p - 1);
+	quickSort(v, p + 1, r);
+}	
+	
 void badSort(vector<int> &v) {
     int n = (int)v.size();
     for (int i = 0; i < n / 2; ++i) {
@@ -44,7 +69,7 @@ void solve() {
 	for(int i = 0; i < n; i++){
 		cin >> v[i];
 	}
-	badSort(v);
+	quickSort(v, 0, v.size() - 1);
 	for(int i : v){
 		cout << i << ' ';
 	}
