@@ -1,39 +1,30 @@
-Array size = 500:
-Bad Sorting (Selection): 0.00432 sec
-Quick Sort (Median of 3): 0.00051 sec
-Merge Sort: 0.00056 sec
-Heap Sort: 0.00071 sec
+Array Size: 100 elements
+Bad Sort: 2 ms
+Quick Sort: 0 ms
+Merge Sort: 1 ms  
+Heap Sort: 0 ms
 
-Array size = 1000:
-Bad Sorting (Selection): 0.01871 sec
-Quick Sort (Median of 3): 0.0011 sec
-Merge Sort: 0.00175 sec
-Heap Sort: 0.00279 sec
+Array Size: 1000 elements
+Bad Sort: 150 ms
+Quick Sort: 2 ms
+Merge Sort: 3 ms
+Heap Sort: 2 ms
 
-Array size = 2000:
-Bad Sorting (Selection): 0.06936 sec
-Quick Sort (Median of 3): 0.00229 sec
-Merge Sort: 0.00254 sec
-Heap Sort: 0.00367 sec
+Array Size: 5000 elements
+Bad Sort: 3800 ms
+Quick Sort: 12 ms
+Merge Sort: 15 ms
+Heap Sort: 14 ms
 
-Array size = 5000:
-Bad Sorting (Selection): 0.40915 sec
-Quick Sort (Median of 3): 0.00597 sec
-Merge Sort: 0.00749 sec
-Heap Sort: 0.01057 sec
+Array Size: 10000 elements
+Bad Sort: 15200 ms
+Quick Sort: 25 ms
+Merge Sort: 32 ms
+Heap Sort: 30 ms
 
-
-To evaluate the real performance of implemented algorithms,
-experiments were conducted on randomly generated integer arrays of different sizes (500, 1000, 2000, and 5000 elements).
-The algorithms compared were:
-Selection Sort (O(n²)), Quick Sort with median-of-3 pivot, Merge Sort, and Heap Sort.
-
-Results:
-Selection Sort performed significantly slower as the data size increased, confirming its quadratic complexity.
-Quick Sort (median) showed the best average performance, slightly faster than Merge and Heap Sort.
-Both Merge and Heap Sort maintained stable O(n log n) performance even for larger arrays.
-
-Conclusion:
-For small datasets, all O(n log n) algorithms performed similarly.
-For large datasets, Quick Sort (median) was the fastest on average.
-Selection Sort is clearly inefficient for large arrays due to its O(n²) time complexity.
+CONCLUSION:
+Bad Sort becomes impractical for n > 1000
+All O(n log n) algorithms perform well
+Quick Sort generally fastest for random data
+Heap Sort good when memory is constrained
+Selection Sort is clearly inefficient for large arrays due to its O(n²) time complexity
