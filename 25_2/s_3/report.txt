@@ -1,0 +1,24 @@
+Benchmark performed on random array of 10,000 integers.
+
+Example Output (on standard CPU):
+Bubble Sort | Time: 494.608 ms | Iterations: 49,995,000
+Merge Sort | Time: 3.5118 ms | Iterations: 120,427
+Quick Sort | Time: 2.1626 ms | Iterations: 155,489
+Heap Sort | Time: 2.6766 ms | Iterations: 235,048
+
+Bubble Sort -> O(n²), slowest, suitable only for small data.
+Merge Sort -> O(n log n), stable and consistent speed.
+Quick Sort -> O(n log n) average, fastest in most cases.
+Heap Sort -> O(n log n), stable speed, but more swaps than quicksort.
+
+=> Quick Sort showed the best performance because:
+
+It minimizes data movement by partitioning in place.
+
+Low overhead and cache-friendly recursion.
+
+Average complexity O(n log n).
+
+=> Merge Sort is slightly slower due to extra memory usage and copying.
+=> Heap Sort is consistent but involves more comparisons and swaps.
+=> Bubble Sort is extremely slow (O(n²)), suitable only for educational use.
