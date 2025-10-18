@@ -146,7 +146,7 @@ def heap_sort(arr):
 # TESTING THE ALGORITHMS
 # ============================================
 
-# My test array (random numbers)
+# My test array
 my_test_array = [64, 34, 25, 12, 22, 11, 90]
 
 print("Original array:", my_test_array)
