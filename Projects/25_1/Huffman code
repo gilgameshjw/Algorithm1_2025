@@ -1,0 +1,81 @@
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <queue>
+#include <vector>
+using namespace std;
+
+struct Node {
+    char ch;
+    int freq;
+    Node *left, *right;
+    Node(char c,int f){
+        ch=c;
+        freq=f;
+        left=right=nullptr;
+    }
+};
+
+struct Cmp {
+    bool operator()(Node* a,Node* b){
+        return a->freq > b->freq;
+    }
+};
+
+void buildCodes(Node* root,string cur,unordered_map<char,string>& codes){
+    if(!root) return;
+    if(!root->left && !root->right){
+        codes[root->ch]=cur;
+    }
+    buildCodes(root->left,cur+"0",codes);
+    buildCodes(root->right,cur+"1",codes);
+}
+
+int main(){
+    string text="hello";
+    unordered_map<char,int> freq;
+
+    for(char c:text) freq[c]++;
+
+    priority_queue<Node*,vector<Node*>,Cmp> pq;
+    for(auto &p:freq) pq.push(new Node(p.first,p.second));
+
+    while(pq.size()>1){
+        Node* l=pq.top(); pq.pop();
+        Node* r=pq.top(); pq.pop();
+        Node* parent=new Node('\0',l->freq+r->freq);
+        parent->left=l; parent->right=r;
+        pq.push(parent);
+    }
+
+    Node* root=pq.top();
+
+    unordered_map<char,string> codes;
+    buildCodes(root,"",codes);
+
+    cout<<"Huffman codes:\n";
+    for(auto &p:codes){
+        cout<<p.first<<": "<<p.second<<"\n";
+    }
+
+    string encoded="";
+    for(char c:text) encoded+=codes[c];
+
+    cout<<"\nEncoded: "<<encoded<<"\n";
+    cout<<"Original bits: "<<text.size()*8<<" Compressed: "<<encoded.size()<<"\n";
+
+    unordered_map<string,char> dec;
+    for(auto &p:codes) dec[p.second]=p.first;
+
+    string decoded="", tmp="";
+    for(char bit:encoded){
+        tmp+=bit;
+        if(dec.count(tmp)){
+            decoded+=dec[tmp];
+            tmp="";
+        }
+    }
+
+    cout<<"Decoded: "<<decoded<<"\n";
+    return 0;
+}
