@@ -73,11 +73,17 @@ AB, AC, BC, BD, CD, DE
 
 Adjacency Matrix
 
+
      { 0  1  1  0  0  
+
        1  0  1  1  0
+
 A=     1  1  0  1  0 
+
        0  1  1  0  1 
+
        0  0  0  1  0 }
+
 
 2.2 Graph Diagram (Undirected)
    
@@ -130,11 +136,17 @@ D → E
 
 Adjacency Matrix
 
+
    { 0  1  1  0  0 
+
      0  0  1  0  1 
+
 B=   0  0  0  1  0 
+
      0  1  0  0  1 
+
      0  0  0  0  0 }
+
 
 3.2 Graph Diagram (Directed)
 
