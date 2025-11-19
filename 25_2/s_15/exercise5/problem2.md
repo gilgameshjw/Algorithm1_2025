@@ -11,13 +11,17 @@ To solve this, we first recall what CSC format means.
 1. Understanding CSC Representation
 
 CSC represents a sparse matrix column by column using three arrays:
-	•	col_pointers[j] — starting index of column j in row_indices
-	•	row_indices[k] — row index for the element
-	•	values[k] — value at position (row, col)
+
+col_pointers[j] — starting index of column j in row_indices
+
+row_indices[k] — row index for the element
+
+values[k] — value at position (row, col)
 
 Thus, all non-zero entries of column j are located in:
 
 k = col_pointers[j] … col_pointers[j+1] − 1
+
 row = row_indices[k]
 
 For a graph, this means:
@@ -30,8 +34,11 @@ For an undirected graph, the matrix is symmetric.
 2. Graph 1 — Undirected Graph
 
 Given CSC data
+
 col_pointers = [0, 2, 5, 8, 11, 12]
+
 row_indices  = [1, 2, 0, 2, 3, 0, 1, 3, 1, 2, 4, 3]
+
 values       = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 Vertices correspond to:
@@ -61,27 +68,29 @@ AB, AC, BC, BD, CD, DE
 
 Adjacency Matrix
 
-A=
-\begin{pmatrix}
-0 & 1 & 1 & 0 & 0 \\
-1 & 0 & 1 & 1 & 0 \\
-1 & 1 & 0 & 1 & 0 \\
-0 & 1 & 1 & 0 & 1 \\
-0 & 0 & 0 & 1 & 0
-\end{pmatrix}
+A={0  1  1  0  0 
+   1  0  1  1  0
+   1  1  0  1  0 
+   0  1  1  0  1 
+   0  0  0  1  0 }
 
 2.2 Graph Diagram (Undirected)
-      B ------- D ------- E
+   
+   B ------- D ------- E
+
      / \       /
+
     A---C----- 
 
 A triangle A–B–C, connected to D, which connects to E.
 
 3. Graph 2 — Directed Graph
-
 Given CSC data
+
 col_pointers = [0, 0, 2, 4, 5, 7]
+
 row_indices  = [0, 3, 0, 1, 2, 1, 3]
+
 values       = [1, 1, 1, 1, 1, 1, 1]
 
 3.1 Reconstructed Adjacency Matrix
@@ -99,38 +108,46 @@ Column D (3): rows = [2] → C→D
 Column E (4): rows = [1, 3] → B→E, D→E
 
 Thus edges are:
-	•	A → B
-	•	A → C
-	•	B → C
-	•	B → E
-	•	C → D
-	•	D → B
-	•	D → E
+A → B
+A → C
+B → C
+B → E
+C → D
+D → B
+D → E
 
 Adjacency Matrix
 
-B=
-\begin{pmatrix}
-0 & 1 & 1 & 0 & 0 \\
-0 & 0 & 1 & 0 & 1 \\
-0 & 0 & 0 & 1 & 0 \\
-0 & 1 & 0 & 0 & 1 \\
-0 & 0 & 0 & 0 & 0
-\end{pmatrix}
+B={0  1  1  0  0 
+   0  0  1  0  1 
+   0  0  0  1  0 
+   0  1  0  0  1 
+   0  0  0  0  0 }
 
 3.2 Graph Diagram (Directed)
+
 A → B → C → D
+
 ↑         ↓
+
 │         B
+
 │
+
 A → C → D → E
+
       ↑
+
       B
 
 A simpler clear diagram:
+
         A → B → C → D
+
           ↑    ↓
+
           └────┘
+
      B → E      D → E
 
 4. Unique Cycle in Directed Graph
@@ -138,9 +155,9 @@ A simpler clear diagram:
 We look for directed cycles.
 
 From edges:
-	•	B → C
-	•	C → D
-	•	D → B
+B →C 	
+C → D
+D → B
 
 This forms the cycle:
 
