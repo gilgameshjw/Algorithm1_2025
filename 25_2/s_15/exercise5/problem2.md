@@ -42,10 +42,15 @@ row_indices  = [1, 2, 0, 2, 3, 0, 1, 3, 1, 2, 4, 3]
 values       = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 Vertices correspond to:
+
 A → 0
+
 B → 1
+
 C → 2
+
 D → 3
+
 E → 4
 
 2.1 Reconstructed Adjacency Matrix
@@ -68,16 +73,20 @@ AB, AC, BC, BD, CD, DE
 
 Adjacency Matrix
 
-A={0  1  1  0  0 
-   1  0  1  1  0
-   1  1  0  1  0 
-   0  1  1  0  1 
-   0  0  0  1  0 }
+   { 0  1  1  0  0 
+ 
+     1  0  1  1  0
+
+A=   1  1  0  1  0 
+
+     0  1  1  0  1 
+
+     0  0  0  1  0 }
 
 2.2 Graph Diagram (Undirected)
    
-   B ------- D ------- E
 
+   B ------- D ------- E
      / \       /
 
     A---C----- 
@@ -108,37 +117,48 @@ Column D (3): rows = [2] → C→D
 Column E (4): rows = [1, 3] → B→E, D→E
 
 Thus edges are:
+
 A → B
+
 A → C
+
 B → C
+
 B → E
+
 C → D
+
 D → B
+
 D → E
 
 Adjacency Matrix
 
-B={0  1  1  0  0 
-   0  0  1  0  1 
-   0  0  0  1  0 
-   0  1  0  0  1 
-   0  0  0  0  0 }
+   { 0  1  1  0  0 
+  
+     0  0  1  0  1 
+  
+B=   0  0  0  1  0 
+    
+     0  1  0  0  1 
+    
+     0  0  0  0  0 }
 
 3.2 Graph Diagram (Directed)
 
-A → B → C → D
+    A → B → C → D
 
-↑         ↓
+    ↑         ↓
 
-│         B
+    │         B
 
-│
+    │ 
 
-A → C → D → E
+    A → C → D → E
+ 
+          ↑
 
-      ↑
-
-      B
+          B
 
 A simpler clear diagram:
 
@@ -155,8 +175,11 @@ A simpler clear diagram:
 We look for directed cycles.
 
 From edges:
-B →C 	
+
+B →C  	
+
 C → D
+
 D → B
 
 This forms the cycle:
