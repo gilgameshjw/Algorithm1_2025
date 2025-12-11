@@ -1,192 +1,256 @@
-import {useEffect, useMemo, useState} from 'react';
-import {
-    setInsert, setContains, setSuggest,
-    mapPut, mapGet, mapContains, mapKeys
-} from './api';
+import { useState } from 'react';
 
-function useDebounce(value, delay = 250) {
-    const [v, setV] = useState(value);
-    useEffect(() => { const id = setTimeout(() => setV(value), delay); return () => clearTimeout(id); }, [value, delay]);
-    return v;
-}
+const API_BASE = 'http://192.168.1.213:8080/api';
 
-export default function App() {
-    return (
-        <div style={styles.page}>
-            <div style={styles.container}>
-                <h1 style={{marginBottom: 8}}>Trie Demo</h1>
-                <div style={{opacity: .7, marginBottom: 16}}>
-                    Backend: Spring Boot • Frontend: React • TrieSet and TrieMap
-                </div>
-                <div style={styles.grid}>
-                    <TrieSetPanel/>
-                    <TrieMapPanel/>
-                </div>
-            </div>
-        </div>
-    );
-}
+function App() {
+    const [isInited, setIsInited] = useState(false);
+    const [initInfo, setInitInfo] = useState(null);
+    const [loadingInit, setLoadingInit] = useState(false);
 
-function TrieSetPanel() {
-    const [word, setWord] = useState('');
-    const [prefix, setPrefix] = useState('');
-    const debPrefix = useDebounce(prefix, 200);
-
-    const [contains, setContainsState] = useState(null);
-    const [suggestions, setSuggestions] = useState([]);
+    const [query, setQuery] = useState('');
     const [k, setK] = useState(10);
-    const [loading, setLoading] = useState(false);
-    const canInsert = useMemo(() => word.trim().length > 0, [word]);
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchLoading, setSearchLoading] = useState(false);
 
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            setLoading(true);
-            try {
-                const [c, s] = await Promise.all([
-                    setContains(debPrefix),
-                    setSuggest(debPrefix, k),
-                ]);
-                if (!cancelled) { setContainsState(c); setSuggestions(s); }
-            } catch {
-                if (!cancelled) { setContainsState(null); setSuggestions([]); }
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, [debPrefix, k]);
+    const [clusters, setClusters] = useState([]);
+    const [clusterLoading, setClusterLoading] = useState(false);
+    const [selectedCluster, setSelectedCluster] = useState(null);
+    const [clusterItems, setClusterItems] = useState([]);
 
-    const onInsert = async () => {
-        await setInsert(word);
-        setWord('');
-        // обновим список
-        const s = await setSuggest(debPrefix, k);
-        setSuggestions(s);
-    };
+    const [error, setError] = useState(null);
+
+    async function handleInit() {
+        setError(null);
+        setLoadingInit(true);
+        setClusterItems([]);
+        setSelectedCluster(null);
+
+        try {
+            const res = await fetch(`${API_BASE}/load-from-resources`, {
+                method: 'POST',
+            });
+            if (!res.ok) throw new Error('Failed to init data');
+            const info = await res.json();
+            setInitInfo(info);
+            setIsInited(true);
+
+            await loadClusters();
+        } catch (e) {
+            console.error(e);
+            setError(e.message || 'Init error');
+        } finally {
+            setLoadingInit(false);
+        }
+    }
+
+    async function loadClusters() {
+        setClusterLoading(true);
+        setError(null);
+        setClusters([]);
+        setClusterItems([]);
+        setSelectedCluster(null);
+
+        try {
+            const res = await fetch(`${API_BASE}/clusters`);
+            if (!res.ok) throw new Error('Failed to load clusters');
+            const data = await res.json();
+            setClusters(data.clusterIds || []);
+        } catch (e) {
+            console.error(e);
+            setError(e.message || 'Cluster load error');
+        } finally {
+            setClusterLoading(false);
+        }
+    }
+
+    async function handleSearch(e) {
+        e.preventDefault();
+        if (!query.trim()) {
+            setSearchResults([]);
+            return;
+        }
+        if (!isInited) {
+            setError('Сначала нажми "Load data"');
+            return;
+        }
+
+        setError(null);
+        setSearchLoading(true);
+        setSearchResults([]);
+
+        try {
+            const params = new URLSearchParams({
+                q: query,
+                k: String(k),
+            });
+            const res = await fetch(`${API_BASE}/search/semantic?` + params.toString());
+            if (!res.ok) throw new Error('Search request failed');
+            const data = await res.json();
+            setSearchResults(data);
+        } catch (e) {
+            console.error(e);
+            setError(e.message || 'Search error');
+        } finally {
+            setSearchLoading(false);
+        }
+    }
+
+    async function handleSelectCluster(clusterId) {
+        if (!isInited) {
+            setError('Сначала нажми "Load data"');
+            return;
+        }
+
+        setError(null);
+        setSelectedCluster(clusterId);
+        setClusterItems([]);
+        setClusterLoading(true);
+
+        try {
+            const params = new URLSearchParams({
+                id: String(clusterId),
+                k: String(k),
+            });
+            const res = await fetch(`${API_BASE}/search/by-cluster?` + params.toString());
+            if (!res.ok) throw new Error('Failed to load cluster items');
+            const data = await res.json();
+            setClusterItems(data);
+        } catch (e) {
+            console.error(e);
+            setError(e.message || 'Cluster items error');
+        } finally {
+            setClusterLoading(false);
+        }
+    }
 
     return (
-        <div style={styles.card}>
-            <h2>TrieSet</h2>
+        <div className="app">
+            <header className="app-header">
+                <h1>Vector Search Demo</h1>
+                <button onClick={handleInit} disabled={loadingInit} className="init-button">
+                    {loadingInit ? 'Loading...' : 'Load data (data.json)'}
+                </button>
+                {initInfo && (
+                    <span className="init-info">
+            Items: {initInfo.items}, kClusters: {initInfo.kClusters}
+          </span>
+                )}
+            </header>
 
-            <div style={styles.label}>Insert word</div>
-            <div style={styles.row}>
-                <input style={styles.input} placeholder="e.g., apple" value={word} onChange={e => setWord(e.target.value)} />
-                <button style={styles.btnPrimary} disabled={!canInsert} onClick={onInsert}>Insert</button>
-            </div>
+            {error && <div className="error-box">Error: {error}</div>}
 
-            <div style={styles.label}>Prefix</div>
-            <div style={styles.row}>
-                <input style={styles.input} placeholder="e.g., app" value={prefix} onChange={e => setPrefix(e.target.value)} />
-                <select style={styles.select} value={k} onChange={e => setK(Number(e.target.value))}>
-                    {[5,10,20,50].map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
-                <span style={{opacity:.7}}>{loading ? 'Loading…' : 'Ready'}</span>
-            </div>
+            <div className="main-grid">
+                {/* Левая панель: Semantic Search */}
+                <section className="column">
+                    <h2>Semantic search</h2>
+                    <form onSubmit={handleSearch} className="search-form">
+                        <input
+                            type="text"
+                            placeholder="Type your query..."
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            className="search-input"
+                        />
+                        <select
+                            value={k}
+                            onChange={(e) => setK(Number(e.target.value))}
+                            className="search-select"
+                        >
+                            <option value={5}>Top-5</option>
+                            <option value={10}>Top-10</option>
+                            <option value={20}>Top-20</option>
+                            <option value={50}>Top-50</option>
+                        </select>
+                        <button
+                            type="submit"
+                            disabled={searchLoading || !isInited}
+                            className="primary-button"
+                        >
+                            {searchLoading ? 'Searching...' : 'Search'}
+                        </button>
+                    </form>
 
-            <div style={{marginTop: 10}}>
-                <div>Contains exact “{debPrefix}”: <b style={{color: contains ? '#10b981' : '#ef4444'}}>{String(!!contains)}</b></div>
-            </div>
+                    <div className="results-box">
+                        {searchResults.length === 0 && !searchLoading && (
+                            <div className="placeholder">
+                                No results yet. Type a query and press "Search".
+                            </div>
+                        )}
 
-            <div style={{marginTop: 10}}>
-                <div style={styles.suggestBox}>
-                    {suggestions.length === 0 && <div style={{opacity:.6}}>No suggestions</div>}
-                    {suggestions.map((w, i) => (
-                        <button key={i} style={styles.chip} onClick={() => setPrefix(w)}>{w}</button>
-                    ))}
-                </div>
+                        {searchResults.map((item) => (
+                            <div key={item.id} className="result-item">
+                                <div className="result-text">{item.text}</div>
+                                <div className="result-meta">
+                                    <span>ID: {item.id}</span>
+                                    <span>Cluster: {item.clusterId}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Правая панель: Clusters */}
+                <section className="column">
+                    <h2>Clusters</h2>
+
+                    <div className="cluster-header">
+                        <span>Available clusters:</span>
+                        <button
+                            onClick={loadClusters}
+                            disabled={clusterLoading || !isInited}
+                            className="small-button"
+                        >
+                            {clusterLoading ? 'Refreshing...' : 'Reload'}
+                        </button>
+                    </div>
+
+                    <div className="cluster-list">
+                        {clusters.length === 0 && isInited && !clusterLoading && (
+                            <div className="placeholder">No clusters loaded yet.</div>
+                        )}
+                        {!isInited && (
+                            <div className="placeholder">Press "Load data" first.</div>
+                        )}
+
+                        {clusters.map((cid) => (
+                            <button
+                                key={cid}
+                                onClick={() => handleSelectCluster(cid)}
+                                className={
+                                    'cluster-button' + (selectedCluster === cid ? ' active' : '')
+                                }
+                            >
+                                Cluster {cid}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="results-box">
+                        <h3 className="cluster-title">
+                            Cluster items {selectedCluster !== null ? `(cluster ${selectedCluster})` : ''}
+                        </h3>
+                        {clusterItems.length === 0 &&
+                            selectedCluster !== null &&
+                            !clusterLoading && (
+                                <div className="placeholder">
+                                    No items in this cluster (or not loaded yet).
+                                </div>
+                            )}
+
+                        {clusterItems.map((item) => (
+                            <div key={item.id} className="result-item">
+                                <div className="result-text">{item.text}</div>
+                                <div className="result-meta">
+                                    <span>ID: {item.id}</span>
+                                    <span>Cluster: {item.clusterId}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             </div>
         </div>
     );
 }
 
-function TrieMapPanel() {
-    const [key, setKey] = useState('');
-    const [value, setValue] = useState('');
-    const [prefix, setPrefix] = useState('');
-    const debPrefix = useDebounce(prefix, 200);
-
-    const [getResp, setGetResp] = useState(null);
-    const [containsResp, setContainsResp] = useState(null);
-    const [keys, setKeys] = useState([]);
-    const [k, setK] = useState(10);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            setLoading(true);
-            try {
-                const [g, c, ks] = await Promise.all([
-                    key ? mapGet(key) : Promise.resolve(null),
-                    key ? mapContains(key) : Promise.resolve({ok:null}),
-                    mapKeys(debPrefix, k),
-                ]);
-                if (!cancelled) { setGetResp(g); setContainsResp(c); setKeys(ks); }
-            } catch {
-                if (!cancelled) { setGetResp(null); setContainsResp({ok:null}); setKeys([]); }
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, [key, debPrefix, k]);
-
-    const onPut = async () => {
-        await mapPut(key, value);
-        const g = await mapGet(key);
-        setGetResp(g);
-    };
-
-    return (
-        <div style={styles.card}>
-            <h2>TrieMap (key → value)</h2>
-
-            <div style={styles.label}>Put (key, value)</div>
-            <div style={styles.row}>
-                <input style={styles.input} placeholder="key (e.g., cat)" value={key} onChange={e => setKey(e.target.value)} />
-                <input style={styles.input} placeholder="value (e.g., animal)" value={value} onChange={e => setValue(e.target.value)} />
-                <button style={styles.btnPrimary} disabled={!key.trim()} onClick={onPut}>Put</button>
-            </div>
-
-            <div style={styles.row}>
-                <span style={{opacity:.7}}>{loading ? 'Loading…' : 'Ready'}</span>
-            </div>
-
-            <div style={{marginTop: 10}}>
-                <div>Contains “{key}”: <b style={{color: containsResp?.ok ? '#10b981' : '#ef4444'}}>{String(!!containsResp?.ok)}</b></div>
-                <div>Get: <code>{getResp ? JSON.stringify(getResp) : 'null'}</code></div>
-            </div>
-
-            <div style={{marginTop: 10}}>
-                <div style={styles.label}>Keys with prefix</div>
-                <div style={styles.row}>
-                    <input style={styles.input} placeholder="prefix (e.g., ca)" value={prefix} onChange={e => setPrefix(e.target.value)} />
-                    <select style={styles.select} value={k} onChange={e => setK(Number(e.target.value))}>
-                        {[5,10,20,50].map(n => <option key={n} value={n}>{n}</option>)}
-                    </select>
-                </div>
-                <div style={styles.suggestBox}>
-                    {keys.length === 0 && <div style={{opacity:.6}}>No keys</div>}
-                    {keys.map((w, i) => (
-                        <button key={i} style={styles.chip} onClick={() => setKey(w)}>{w}</button>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-const styles = {
-    page: {minHeight:'100dvh', background:'#0b1220', color:'#e5e7eb', display:'flex', alignItems:'flex-start', justifyContent:'center', padding:24},
-    container: {width:980, maxWidth:'100%', display:'flex', flexDirection:'column'},
-    grid: {display:'grid', gridTemplateColumns:'1fr 1fr', gap:16},
-    card: {background:'#0f172a', border:'1px solid #1f2937', borderRadius:14, padding:16, boxShadow:'0 8px 24px rgba(0,0,0,.25)'},
-    row: {display:'flex', gap:8, alignItems:'center', marginTop:8},
-    input: {flex:1, padding:'10px 12px', borderRadius:8, border:'1px solid #334155', background:'#111827', color:'#e5e7eb'},
-    select: {padding:'10px 12px', borderRadius:8, border:'1px solid #334155', background:'#111827', color:'#e5e7eb'},
-    btnPrimary: {padding:'10px 14px', borderRadius:8, border:'1px solid #0ea5e9', background:'#0ea5e933', color:'#e5e7eb', cursor:'pointer'},
-    suggestBox: {display:'flex', gap:8, flexWrap:'wrap', minHeight:40, border:'1px dashed #334155', borderRadius:10, padding:10, marginTop:6},
-    chip: {padding:'6px 10px', borderRadius:999, border:'1px solid #334155', background:'#111827', color:'#e5e7eb', cursor:'pointer'},
-    label: {marginTop:8, fontSize:12, opacity:.8}
-};
+export default App;
