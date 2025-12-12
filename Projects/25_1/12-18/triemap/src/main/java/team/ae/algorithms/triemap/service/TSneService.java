@@ -54,7 +54,8 @@ public class TSneService {
             return List.of();
         }
 
-        TSNE tsneResult = TSNE.fit(highDim);
+        var options = new TSNE.Options(3, 20, 200, 12, 1000);
+        TSNE tsneResult = TSNE.fit(highDim, options);
         double[][] lowDim = tsneResult.coordinates();
 
         List<Visualization3D> result = new ArrayList<>();

@@ -3,6 +3,7 @@ package team.ae.algorithms.triemap.service;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import smile.nlp.embedding.GloVe;
@@ -22,6 +23,7 @@ import java.util.Locale;
 @Slf4j
 @Service
 @Qualifier("gloveEmbeddingService")
+@Primary
 public class GloveEmbeddingService implements EmbeddingService {
 
     /**

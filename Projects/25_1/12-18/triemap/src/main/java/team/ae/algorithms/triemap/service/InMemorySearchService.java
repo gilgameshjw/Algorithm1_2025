@@ -34,8 +34,10 @@ import java.util.stream.IntStream;
  * <p>
  * Responsibilities:
  * 1) Load textual items from JSON (data.json or request payload).
- * 2) Vectorize items using character-based vectors and run K-Means clustering.
- * 3) Provide cluster-aware semantic search using Bag-of-Words + cosine similarity.
+ * 2) Vectorize items using Embeddings and run K-Means clustering.
+ * 3) Provide cluster-aware semantic search using cosine similarity.
+ * 4) Provide cluster inspection APIs.
+ * 5) Collect cluster centroids and items via TSNE dimensional reduction for visualization.
  */
 @Service
 @RequiredArgsConstructor
