@@ -84,8 +84,8 @@ public class KMeansSimple {
             }
             for (int c = 0; c < k; c++) {
                 if (count[c] == 0) {
-                    // empty cluster - keep old centroid
-                    newCentroids[c] = Arrays.copyOf(centroids[c], dim);
+                    int idx = rnd.nextInt(n);
+                    newCentroids[c] = Arrays.copyOf(X[idx], dim);
                 } else {
                     for (int d = 0; d < dim; d++) {
                         newCentroids[c][d] /= count[c];
@@ -107,7 +107,8 @@ public class KMeansSimple {
         return c;
     }
 
-    private double dist2(double[] a, double[] b) {
+    // Euclidean distance
+    public static double dist2(double[] a, double[] b) {
         double s = 0;
         for (int i = 0; i < a.length; i++) {
             double d = a[i] - b[i];

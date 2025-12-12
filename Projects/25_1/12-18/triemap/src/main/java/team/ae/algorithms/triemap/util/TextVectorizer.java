@@ -3,7 +3,6 @@ package team.ae.algorithms.triemap.util;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * Utility class for simple text vectorization and similarity measures.
@@ -15,66 +14,6 @@ import java.util.regex.Pattern;
 public final class TextVectorizer {
 
     private TextVectorizer() {
-    }
-
-    // ---------- Bag-of-Words (words) ----------
-
-    private static final Pattern NON_ALNUM_SPLIT = Pattern.compile("[^a-z0-9]+");
-
-    /**
-     * Builds a simple Bag-of-Words map: token (lowercased) -> frequency.
-     */
-    public static Map<String, Integer> toBagOfWords(String text) {
-        Map<String, Integer> wordFrequencies = new HashMap<>();
-        if (text == null) {
-            return wordFrequencies;
-        }
-
-        String normalized = text.toLowerCase(Locale.ROOT);
-        String[] tokens = NON_ALNUM_SPLIT.split(normalized);
-
-        for (String token : tokens) {
-            if (token.isEmpty()) continue;
-            wordFrequencies.merge(token, 1, Integer::sum);
-        }
-        return wordFrequencies;
-    }
-
-    /**
-     * Computes cosine similarity between two Bag-of-Words maps.
-     * Uses standard formula: cos = dot / (||A|| * ||B||).
-     */
-    public static double cosineFromBagOfWords(Map<String, Integer> first,
-                                              Map<String, Integer> second) {
-        if (first.isEmpty() || second.isEmpty()) {
-            return 0.0;
-        }
-
-        // dot product
-        double dotProduct = 0.0;
-        for (Map.Entry<String, Integer> entry : first.entrySet()) {
-            Integer secondValue = second.get(entry.getKey());
-            if (secondValue != null) {
-                dotProduct += entry.getValue() * secondValue;
-            }
-        }
-
-        // norms
-        double normFirstSquared = 0.0;
-        for (int value : first.values()) {
-            normFirstSquared += value * value;
-        }
-
-        double normSecondSquared = 0.0;
-        for (int value : second.values()) {
-            normSecondSquared += value * value;
-        }
-
-        if (normFirstSquared == 0.0 || normSecondSquared == 0.0) {
-            return 0.0;
-        }
-
-        return dotProduct / (Math.sqrt(normFirstSquared) * Math.sqrt(normSecondSquared));
     }
 
     // ---------- Character-based vector (length 48) ----------

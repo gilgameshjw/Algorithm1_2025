@@ -10,7 +10,9 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         var cfg = new org.springframework.web.cors.CorsConfiguration();
+        cfg.addAllowedOriginPattern("http://192.168.*.*:5174");
         cfg.addAllowedOriginPattern("http://192.168.*.*:5173");
+        cfg.addAllowedOriginPattern("http://localhost:5174");
         cfg.addAllowedOriginPattern("http://localhost:5173");
         cfg.addAllowedMethod("*");
         cfg.addAllowedHeader("*");

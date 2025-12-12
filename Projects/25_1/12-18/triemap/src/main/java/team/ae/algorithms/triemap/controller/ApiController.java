@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import team.ae.algorithms.triemap.dto.Item;
 import team.ae.algorithms.triemap.dto.LoadRequest;
 import team.ae.algorithms.triemap.dto.SearchResultDto;
+import team.ae.algorithms.triemap.dto.Visualization2DDto;
+import team.ae.algorithms.triemap.dto.Visualization3DDto;
 import team.ae.algorithms.triemap.service.InMemorySearchService;
 
 import java.util.List;
@@ -93,6 +95,16 @@ public class ApiController {
     @GetMapping("/items")
     public List<Item> all() {
         return searchService.all();
+    }
+
+    @GetMapping("/visualize/2d")
+    public Visualization2DDto visualize2D() {
+        return searchService.visualize2DWithCentroids();
+    }
+
+    @GetMapping("/visualize/3d")
+    public Visualization3DDto visualize3D() {
+        return searchService.visualize3DWithCentroids();
     }
 
 }
