@@ -1,0 +1,72 @@
+# exo_10_short.py
+import math
+
+print("=" * 60)
+print("PROBLEM 1: P/NP CLASSIFICATION")
+print("=" * 60)
+print("1. Find max, linear search, shortest path unweighted, matrix multiplication → P")
+print("2. Sorting, Dijkstra (non-neg), BFS, DFS, merge/quick sort → P")
+print("3. Sudoku → NP-Complete")
+print("4. 3-coloring, scheduling with conflicts → NP-Complete")
+print("5. TSP, Hamiltonian Cycle, Clique → NP-Complete")
+print("6. Cryptography, factoring → Unknown/Possibly NP")
+print("7. Halting Problem, Busy Beaver → Undecidable")
+
+print("\n" + "=" * 60)
+print("PROBLEM 2: BAYES DISEASE TEST (Answer: 9%)")
+print("=" * 60)
+
+# Bayes calculation
+prevalence = 0.001  # 0.1%
+accuracy = 0.99     # 99%
+p_pos_given_disease = accuracy
+p_pos_given_no_disease = 1 - accuracy
+p_disease = prevalence
+p_no_disease = 1 - prevalence
+
+# P(Disease|Positive) = [P(Pos|Disease)*P(Disease)] / [P(Pos|Disease)*P(Disease) + P(Pos|~Disease)*P(~Disease)]
+numerator = p_pos_given_disease * p_disease
+denominator = (p_pos_given_disease * p_disease) + (p_pos_given_no_disease * p_no_disease)
+result = numerator / denominator
+
+print(f"Given: Disease prevalence = {prevalence:.3%}, Test accuracy = {accuracy:.1%}")
+print(f"Bayes: P(Disease|Positive) = ({accuracy}×{prevalence}) / ({accuracy}×{prevalence} + {1-accuracy}×{1-prevalence})")
+print(f"Result: {result:.1%}")
+print(f"\nWhy 9% not 99%? Base rate fallacy! With 1000 people:")
+print(f"- 1 sick person (99% test positive → ~1 true positive)")
+print(f"- 999 healthy (1% false positive → ~10 false positives)")
+print(f"- Total positives: ~11, only 1 actually sick → ~9%")
+
+print("\n" + "=" * 60)
+print("PROBLEM 3: SHANNON ENTROPY")
+print("=" * 60)
+
+def entropy(p):
+    """Shannon entropy for binary event."""
+    q = 1 - p
+    if p == 0 or p == 1:
+        return 0
+    return -(p * math.log2(p) + q * math.log2(q))
+
+coins = [
+    ("Coin A (Fair, 50% heads)", 0.5),
+    ("Coin B (Biased, 99% heads)", 0.99),
+    ("Coin C (Rare, 1% heads)", 0.01)
+]
+
+for name, p in coins:
+    h = entropy(p)
+    surprise_heads = -math.log2(p) if p > 0 else float('inf')
+    surprise_tails = -math.log2(1-p) if p < 1 else float('inf')
+    print(f"\n{name}:")
+    print(f"  Entropy: {h:.3f} bits")
+    print(f"  Surprise if heads: {surprise_heads:.3f} bits")
+    print(f"  Surprise if tails: {surprise_tails:.3f} bits")
+
+print("\nWhy fair coin = 1 bit, 99% coin = 0.08 bits?")
+print("Entropy measures UNCERTAINTY, not just outcomes.")
+print("Fair coin: maximum uncertainty → 1 bit (need 1 bit to communicate result)")
+print("99% coin: very predictable → low uncertainty → few bits needed on average")
+print("\nKey insight: Predictable events are 'cheap' to describe!")
+
+print("\n" + "=" * 60)
