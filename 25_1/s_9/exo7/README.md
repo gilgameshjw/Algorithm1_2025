@@ -65,3 +65,114 @@ Facts:
 
 **Therefore, non-planar graphs do not have a dual graph.**
 
+Problem2:
+
+Bron–Kerbosch Execution
+
+Given an undirected graph 𝐺=(𝑉,𝐸)  
+
+Vertices:
+
+𝑉
+=
+{
+𝐴
+,
+𝐵
+,
+𝐶
+,
+𝐷
+}
+
+
+Edges:
+
+𝐸
+=
+{
+𝐴
+𝐵
+,
+𝐴
+𝐶
+,
+𝐵
+𝐶
+,
+𝐶
+𝐷
+}
+
+```
+graph = {
+  "A": ["B", "C"],
+  "B": ["A", "C"],
+  "C": ["A", "B", "D"],
+  "D": ["C"]
+}
+```
+
+### 1. Initial call of the Bron–Kerbosch algorithm
+
+At the start:
+
+
+* R=∅ (current clique)
+
+
+* P={A,B,C,D} (possible vertices)
+
+
+* X=∅ (already processed vertices)
+
+```
+BronKerbosch(R = ∅, P = {A,B,C,D},X = ∅)   
+```
+### 2. First recursive calls leading to a maximal clique
+
+*Step 1: choose vertex A from P*
+```
+R = {A}
+P = {B, C}      (neighbors of A)
+X = ∅
+```
+
+*Step 2: choose vertex B from P*
+```
+R = {A, B}
+P = {C}   (neighbors common to A and B)
+X = ∅
+```
+
+*Step 3: choose vertex C from P*
+```
+R = {A, B, C}
+P = ∅
+X = ∅
+```
+
+**Since P = ∅ and X = ∅, a maximal clique is reported:**
+```
+{A, B, C}
+```
+
+### 3. All maximal cliques of G
+From the full execution of the algorithm, the maximal cliques are:
+
+* {A, B, C}
+
+* {C, D}
+
+### Maximum clique(s)
+
+*Clique sizes:*
+
+* {A, B, C} → size 3
+
+* {C, D} → size 2
+
+```
+{A, B, C}
+```
+
